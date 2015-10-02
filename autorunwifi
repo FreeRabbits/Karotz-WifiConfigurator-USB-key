@@ -1,0 +1,94 @@
+#! /usr/bin/python
+
+import os
+import sys
+import time
+import simplejson as json
+
+# PLAY will play an MP3 file on the USB key
+def PLAY(mp3file):
+  cmd = "/tmp/madplay /mnt/usbkey/sound/" + mp3file + ".mp3"
+  os.system(cmd)
+
+# LEDPULSE will change the color of the pulsing led
+def LEDPULSE(ledcolor):
+  os.system("killall led")
+  cmd = "/karotz/bin/led -l " + ledcolor + " -p 000000 -d 700 &"
+  os.system(cmd)
+  time.sleep(1)
+
+# LEDSTATIC will change the color of the static led
+def LEDSTATIC(ledcolor):
+  os.system("killall led")
+  cmd = "/karotz/bin/led -l " + ledcolor
+  os.system(cmd)
+  time.sleep(1)
+
+# turn led to orange
+LEDPULSE("FFA500")
+
+# extend the path so the scripts can be found
+sys.path.append("/usr/scripts")
+sys.path.append("/karotz/scripts")
+  
+# untar tools2.tar in tmp so we can use /tmp/ to execute a command
+os.system("tar -xvf /mnt/usbkey/tools/tools2.tar -C /tmp/")
+
+# play a sound
+PLAY("start")
+
+try:
+
+  # create a logfile on the USB key
+  logfile = open("/mnt/usbkey/log.txt", "w")
+  logfile.write("START WIFI SETUP\n")
+
+  # import config functions that will do the real work
+  import config
+  
+  # assign logfile to a variable used in config, so config can write its debug info
+  config.serialFileW = logfile
+
+  # read network.conf file in lines
+  f = open("/mnt/usbkey/network.conf")
+  line = f.read()
+  lines = line.split('\n') 
+  f.close()  
+  
+  # feed each line to config (config.py from the rabbit)
+  for line in lines: 
+    print line
+    logfile.write(line + "\n")  
+    config.onReceivedLine(line)
+    time.sleep(1)  
+
+  # close logfile
+  logfile.write("END WIFI SETUP\n")
+  logfile.flush()
+  logfile.close()
+  
+except Exception, e:
+  # turn led to red
+  LEDSTATIC("FF0000")
+  # log exception information
+  errormessage = "ERROR: " + str(e)
+  print errormessage
+  logfile.write(errormessage)
+  logfile.flush()
+  logfile.close()
+  # play error sounds
+  PLAY("Karotz_error")
+  PLAY("error")
+  # wait for 5 seconds
+  time.sleep(5)
+  
+# turn led to green
+LEDSTATIC("00FF00")
+
+# play a sound
+PLAY("end")
+
+# unmount and final stuff
+time.sleep(1)
+os.system("umount -l /mnt/usbkey")
+os.system("killall led")
