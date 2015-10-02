@@ -1,9 +1,8 @@
 # Karotz-WifiConfigurator-USB-key
 
-Just put all the files on a FAT32 formatted USB key and plug it into your Karotz.
-The file "network.conf" is created by the commandline utility called "KarotzWifiConfigurator.exe".
+With the files in this repo, you can create a USB bootable key to change the network and WIFI settings of your Karotz running Open Karotz.
 
-Detailed instructions:
+Instructions:
 
 - Download this repo as ZIP file.
 - Unzip to the root of a FAT32 formatted USB key
