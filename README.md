@@ -13,3 +13,5 @@ Instructions:
 
 You can find the source code (C#) of the KarotzWifiConfigurator here:
 https://github.com/FreeRabbits/KarotzWifiConfigurator
+
+More information on: http://www.freerabbits.nl/reconfigure-wifi/
