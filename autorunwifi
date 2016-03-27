@@ -85,6 +85,8 @@ except Exception, e:
 # turn led to green
 LEDSTATIC("00FF00")
 
+os.system("sync")
+
 # play a sound
 PLAY("end")
 
